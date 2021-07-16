@@ -1,10 +1,10 @@
 const dataBase
-const req = indexedDB.open('transactions', 1)
+const request = indexedDB.open('transactions', 1)
 
 
-req.onupgradeneeded = (e) => {
+request.onupgradeneeded = (e) => {
 
-    const dataBase = e.target.res
+    const dataBase = e.target.result
     const saveData = dataBase.createObjectStore('create', { keyPath: 'id', autoIncrement: true })
 
     saveData.creatIndex('name', 'name')
@@ -13,14 +13,14 @@ req.onupgradeneeded = (e) => {
 }
 
 
-req.onsuccess = (e) => {
+request.onsuccess = (e) => {
     
-    dataBase = e.target.res
+    dataBase = e.target.result
     if (navigator.onLine) {checkDatabase()}
 }
 
 
-req.onerror = (e) => {
+request.onerror = (e) => {
     
     console.log(`An error has occurred. Please check the error code. ${e.target.errorCode}`);
 }
@@ -41,12 +41,12 @@ retrieveData = () => {
     const getAll = write.getAll()
 
     getAll.onsuccess = () => {
-        if (getAll.res.length > 0) {
+        if (getAll.result.length > 0) {
             
             fetch('/api/transaction/bulk', {
                 
                 method: 'POST',
-                body: JSON.stringify(getAll.res),
+                body: JSON.stringify(getAll.result),
                 headers: {
                     
                     Accept: 'application/json, text/plain, */*',
