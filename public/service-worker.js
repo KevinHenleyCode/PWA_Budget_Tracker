@@ -12,7 +12,10 @@ console.log('Service worker up and running!');
 
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(preCache).then((cache) => cache.addAll(cacheFiles)).then(self.skipWaiting()))
+  e.waitUntil(caches
+    .open(preCache)
+    .then((caches) => caches.addAll(cacheFiles))
+    .then(self.skipWaiting()))
 })
 
 
