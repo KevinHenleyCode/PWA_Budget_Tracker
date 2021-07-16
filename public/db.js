@@ -26,7 +26,7 @@ req.onerror = (e) => {
 }
 
 
-saveData = (data) => {
+saveRecord = (data) => {
     
     const transaction = dataBase.transaction(['create', 'store'])
     const write = transaction.objectStore('create')
