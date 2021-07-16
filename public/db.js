@@ -5,7 +5,7 @@ const req = indexedDB.open('transactions', 1)
 req.onupgradeneeded = (e) => {
 
     const dataBase = e.target.res
-    const saveData = dataBase.createObjectStore('create', { keypath: 'id', autoIncrement: true })
+    const saveData = dataBase.createObjectStore('create', { keyPath: 'id', autoIncrement: true })
 
     saveData.creatIndex('name', 'name')
     saveData.creatIndex('value', 'value')
