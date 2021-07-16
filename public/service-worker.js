@@ -4,6 +4,7 @@ const cacheFiles = [
   'index.js',
   'index.html',
   'style.css',
+  'db.js'
 ]
 
 
