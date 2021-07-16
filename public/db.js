@@ -1,10 +1,10 @@
-const dataBase
+let dataBase
 const request = indexedDB.open('transactions', 1)
 
 
 request.onupgradeneeded = (e) => {
 
-    const dataBase = e.target.result
+    dataBase = e.target.result
     const saveData = dataBase.createObjectStore('create', { keyPath: 'id', autoIncrement: true })
 
     saveData.creatIndex('name', 'name')
@@ -28,13 +28,20 @@ request.onerror = (e) => {
 
 saveRecord = (data) => {
     
+    const dataBase = request.result
+
     const transaction = dataBase.transaction(['create', 'store'])
     const write = transaction.objectStore('create')
-    write.add(data)
+
+    write.add({
+        name: data.name, 
+        value: data.value, 
+        date: new Date().toISOString()
+    })
 }
 
 
-retrieveData = () => {
+checkDatabase = () => {
 
     const transaction = dataBase.transaction(['create'], 'store')
     const write = transaction.objectStore('create')
@@ -54,7 +61,7 @@ retrieveData = () => {
                 
                 }
             })
-            .then((res) => res.json())
+            .then((responce) => responce.json())
             
             .then(() => {  
                 let transaction = dataBase.transaction(['create'], 'store')
