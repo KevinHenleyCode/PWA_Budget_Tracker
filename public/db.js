@@ -1,5 +1,5 @@
 let dataBase
-const request = indexedDB.open('budget', 1)
+const request = window.indexedDB.open('budget', 1)
 
 
 request.onupgradeneeded = (e) => {
