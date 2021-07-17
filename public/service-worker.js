@@ -1,46 +1,56 @@
-const cacheName = 'v1'
+const runTime = 'runtime'
+const preCache = 'precache-v1'
+
+
 const cacheFiles = [
   '/',
   'index.js',
   'index.html',
   'style.css',
-  'db.js'
 ]
 
 
-self.addEventListener('install', function(e) {
-    console.log('Service worker is working');
+console.log('The Service Worker is up and running!');
 
-    e.waitUntil(
-        caches.open(cacheName)
-        .then(function (cache) {  
-            console.log('Caching files')
-            return cache.addAll(cacheFiles)
-        })
-    )
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(preCache).then((caches) => caches.addAll(cacheFiles)).then(self.skipWaiting()))
 })
 
-self.addEventListener('acrive', function(e) {
-    console.log('Service worker is now activated')
 
-    e.waitUntil(
-        caches.keys()
-        .then(function (cacheNames) {  
-            return Promise.all(cacheNames.map(function (thisCacheName) {
-                if (thisCacheName !== cacheName) {
-                    console.log('Removing files from cache')
-                    return caches.delete(thisCacheName)
-                } 
-            }))
-        })
-    )
+self.addEventListener('activate', (e) => {
+  const currentCaches = [preCache, runTime]
+  e.waitUntil(caches.keys().then((cacheNames) => {
+    return cacheNames.filter((cacheName) => !currentCaches.includes(cacheName))}).then((cachesToDelete) => {
+    return Promise.all(cachesToDelete.map((cacheToDelete) => {return caches.delete(cacheToDelete)}))}).then(() => self.clients.claim()))
 })
+
+
+self.addEventListener('fetch', (e) => {
+  if (e.req.url.startsWith(self.location.origin)) {
+    e.respondWith(caches.match(e.req).then((res) => {
+        
+        if (res) {
+          return response;
+        }
+
+        return caches.open(runTime).then((cache) => {
+          return fetch(e.req).then((res) => {
+            return cache.put(e.req, res.clone()).then(() => {
+              return res
+            })
+          })
+        })
+      })
+    )
+  }
+})
+
 
 self.addEventListener('fetch', function (e) {
     console.log('Service worker is now fetching', e.request.url)
-    e.respondWith(
-        caches.match(e.request)
-        .then(function(response){
+    e.respondWith(caches.match(e.request).then(function(response){
+            
             if (response) {
                 console.log(e.request.url)
                 return response
@@ -48,8 +58,8 @@ self.addEventListener('fetch', function (e) {
 
             const reqClone = e.request.clone()
 
-            fetch(reqClone)
-            .then(function (responce) {  
+            fetch(reqClone).then(function (responce) {  
+                
                 if (!responce) {
                     console.log('fetch has not responded')
                     return responce
@@ -62,6 +72,7 @@ self.addEventListener('fetch', function (e) {
                     return responce
                 })
             })
+            
             .catch(function(error) {
                 console.log('There was an error', error);
             })
