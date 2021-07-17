@@ -47,7 +47,7 @@ self.addEventListener("fetch", function(evt) {
           }).catch(err => {
             return cache.match(evt.request);
           })
-      }).catch(err => console.log(err)))
+      }).catch(err => console.log(`This is the error ${err}`)))
     return
   }
   evt.respondWith(caches.match(evt.request).then(function(response) {
