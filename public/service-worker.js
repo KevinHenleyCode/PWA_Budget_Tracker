@@ -15,12 +15,9 @@ console.log('The Service Worker is up and running!');
 
 
 self.addEventListener("install", function(evt) {
-  evt.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log("Files pre-cached!")
-      return cache.addAll(FILES_TO_CACHE)
-    }))
-  self.skipWaiting();
+  evt.waitUntil(caches.open(DATA_CACHE_NAME).then((cache) => cache.add('/api/transaction')))
+  evt.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE)))
+  self.skipWaiting()
 })
 
 self.addEventListener("activate", function(evt) {
@@ -39,19 +36,21 @@ self.addEventListener("activate", function(evt) {
 })
 
 self.addEventListener("fetch", function(evt) {
-  if (evt.request.url.includes("/api/transaction")) {
+  if (evt.request.url.includes("/api")) {
     evt.respondWith(caches.open(DATA_CACHE_NAME).then(cache => {
-        return fetch(evt.request).then(response => {
-            if (response.status === 200) {cache.put(evt.request.url, response.clone())}
-            return response
+        return fetch(evt.request).then(res => {
+            if (res.status === 200) {cache.put(evt.request.url, res.clone())}
+            return res
           }).catch(err => {
             return cache.match(evt.request);
           })
       }).catch(err => console.log(`This is the error ${err}`)))
     return
   }
-  evt.respondWith(caches.match(evt.request).then(function(response) {
-      return response || fetch(evt.request);
+  evt.respondWith(caches.open(CACHE_NAME).then(cache => {
+      return cache.match(evt.request).then(res => {
+        return res || fetch(evt.request)
+      })
     })
   )
 })
