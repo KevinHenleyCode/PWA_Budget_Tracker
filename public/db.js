@@ -1,11 +1,11 @@
-let dataBase
+let db
 const request = window.indexedDB.open('budget', 1)
 
 
 request.onupgradeneeded = (e) => {
 
-    dataBase = e.target.result
-    const saveData = dataBase.createObjectStore('create', { keyPath: 'id', autoIncrement: true })
+    db = e.target.result
+    const saveData = db.createObjectStore('create', { keyPath: 'id', autoIncrement: true })
 
     saveData.creatIndex('name', 'name')
     saveData.creatIndex('value', 'value')
@@ -15,8 +15,8 @@ request.onupgradeneeded = (e) => {
 
 request.onsuccess = (e) => {
     
-    dataBase = e.target.result
-    if (navigator.onLine) {checkDatabase()}
+    db = e.target.result
+    if (navigator.onLine) {checkdb()}
 }
 
 
@@ -28,9 +28,9 @@ request.onerror = (e) => {
 
 saveRecord = (data) => {
     
-    const dataBase = request.result
+    const db = request.result
 
-    const transaction = dataBase.transaction(['create', 'store'])
+    const transaction = db.transaction(['create'], 'store')
     const write = transaction.objectStore('create')
 
     write.add({
@@ -41,9 +41,9 @@ saveRecord = (data) => {
 }
 
 
-checkDatabase = () => {
+checkdb = () => {
 
-    const transaction = dataBase.transaction(['create'], 'store')
+    const transaction = db.transaction(['create'], 'store')
     const write = transaction.objectStore('create')
     const getAll = write.getAll()
 
@@ -61,10 +61,10 @@ checkDatabase = () => {
                 
                 }
             })
-            .then((responce) => responce.json())
+            .then((response) => response.json())
             
             .then(() => {  
-                let transaction = dataBase.transaction(['create'], 'store')
+                let transaction = db.transaction(['create'], 'store')
                 const write = transaction.objectStore('create')
                 write.clear()
             
@@ -74,4 +74,4 @@ checkDatabase = () => {
 } 
 
 
-window.addEventListener('online', checkDatabase)
+window.addEventListener('online', checkdb)
