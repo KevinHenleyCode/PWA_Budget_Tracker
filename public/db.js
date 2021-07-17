@@ -16,7 +16,7 @@ request.onupgradeneeded = (e) => {
 request.onsuccess = (e) => {
     
     db = e.target.result
-    if (navigator.onLine) {checkdb()}
+    if (navigator.onLine) {checkDatabase()}
 }
 
 
@@ -41,7 +41,7 @@ saveRecord = (data) => {
 }
 
 
-checkdb = () => {
+checkDatabase = () => {
 
     const transaction = db.transaction(['create'], 'store')
     const write = transaction.objectStore('create')
@@ -74,4 +74,4 @@ checkdb = () => {
 } 
 
 
-window.addEventListener('online', checkdb)
+window.addEventListener('online', checkDatabase)
