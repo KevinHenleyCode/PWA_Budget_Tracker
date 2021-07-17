@@ -30,7 +30,7 @@ saveRecord = (data) => {
     
     const db = request.result
 
-    const transaction = db.transaction(['create'], 'store')
+    const transaction = db.transaction(['create'], 'readWrite')
     const write = transaction.objectStore('create')
 
     write.add({
@@ -43,7 +43,7 @@ saveRecord = (data) => {
 
 checkDatabase = () => {
 
-    const transaction = db.transaction(['create'], 'store')
+    const transaction = db.transaction(['create'], 'readWrite')
     const write = transaction.objectStore('create')
     const getAll = write.getAll()
 
@@ -64,7 +64,7 @@ checkDatabase = () => {
             .then((response) => response.json())
             
             .then(() => {  
-                let transaction = db.transaction(['create'], 'store')
+                let transaction = db.transaction(['create'], 'readWrite')
                 const write = transaction.objectStore('create')
                 write.clear()
             
